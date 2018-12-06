@@ -58,28 +58,34 @@ object HelpDraw {
         }
     }
 
-    fun drawLines(canvas: Canvas, paint: Paint, vararg points: Point) {
-//        var i = 0
-//        while (i < points.size) {
-//            if (i > points.size - 2) {
-//                return
-//            }
-//            canvas.drawLine(
-//                points[i].x.toFloat(),
-//                points[i].y.toFloat(),
-//                points[i + 1].x.toFloat(),
-//                points[i + 1].y.toFloat(),
-//                paint
-//            )
-//            i += 2
-//        }
+    /**
+     * 绘制点集
+     */
+    fun drawPos(canvas: Canvas, paint: Paint, vararg points: PointF) {
+        for (point in points) {
+            canvas.drawPoint(point.x, point.y, paint)
+        }
+    }
 
+    fun drawLines(canvas: Canvas, paint: Paint, vararg points: Point) {
         for (i in 0 until points.size step 2) {
             canvas.drawLine(
                 points[i].x.toFloat(),
                 points[i].y.toFloat(),
                 points[i + 1].x.toFloat(),
                 points[i + 1].y.toFloat(),
+                paint
+            )
+        }
+    }
+
+    fun drawLines(canvas: Canvas, paint: Paint, vararg points: PointF) {
+        for (i in 0 until points.size step 2) {
+            canvas.drawLine(
+                points[i].x,
+                points[i].y,
+                points[i + 1].x,
+                points[i + 1].y,
                 paint
             )
         }

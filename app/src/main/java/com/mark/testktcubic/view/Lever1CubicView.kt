@@ -1,35 +1,24 @@
 package com.mark.testktcubic.view
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
-import android.os.Build
-import android.support.annotation.RequiresApi
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Point
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
 import com.mark.testktcubic.HelpDraw
 import com.mark.testktcubic.L
 import com.mark.testktcubic.Utils
 
 
-class Lever1CubicView : View {
+class Lever1CubicView : BaseCubicView {
 
-    private val mCoo = Point(500, 500)//坐标系
-    private lateinit var mCooPicture: Picture//坐标系canvas元件
-    private lateinit var mGridPicture: Picture//网格canvas元件
-    private lateinit var mHelperPaint: Paint//辅助画笔
     private val c1p0 = Point(0, 0)
     private val c1p1 = Point(300, 0)
     private val c1p2 = Point(150, -200)
     private val c1p3 = Point(300, -200)
-
-    private val src = Point(0, 0)
-
-    private var mPaint: Paint
-    private var mPath: Path
-    private var mAnimator: ValueAnimator
 
 
     constructor(context: Context?) : this(context, null)
@@ -38,22 +27,6 @@ class Lever1CubicView : View {
 
 
     init {
-        //初始化画笔
-        mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        mPaint.color = Color.BLUE
-        mPaint.strokeWidth = 5F
-        //初始化主路径
-        mPath = Path()
-
-        //初始化辅助
-        mHelperPaint = HelpDraw.getHelpPaint(0xffF83517.toInt())
-        mCooPicture = HelpDraw.getCoo(context, mCoo)
-        mGridPicture = HelpDraw.getGrid(context)
-
-        mAnimator = ValueAnimator.ofFloat(1F, 0F)
-        mAnimator.duration = 2000
-        mAnimator.repeatMode = ValueAnimator.REVERSE
-        mAnimator.repeatCount = -1
         mAnimator.addUpdateListener {
             val rate = it.animatedValue as Float
             L.d(rate.toString() + L.l())
@@ -88,18 +61,24 @@ class Lever1CubicView : View {
         canvas.restore()
     }
 
-    private fun helpView(canvas: Canvas) {
+    override fun helpView(canvas: Canvas) {
         mHelperPaint.strokeWidth = 20f
         HelpDraw.drawPos(canvas, mHelperPaint, c1p0, c1p1, c1p2, c1p3)
 
         mHelperPaint.strokeWidth = 2f
         HelpDraw.drawLines(canvas, mHelperPaint, c1p0, c1p1, c1p2, c1p3)
+
+        mHelperPaint.pathEffect = null
+        mHelperPaint.style = Paint.Style.FILL
+        with(canvas) {
+            drawText("起始点p0:" + c1p0.toString(), 700f, -300f, mHelperPaint)
+            drawText("控制点p1:" + c1p1.toString(), 700f, -240f, mHelperPaint)
+            drawText("控制点p2:" + c1p2.toString(), 700f, -180f, mHelperPaint)
+            drawText("终止点p3:" + c1p3.toString(), 700f, -120f, mHelperPaint)
+
+        }
     }
 
-    fun setPos(event: MotionEvent, p: Point) {
-        p.x = (event.x - mCoo.x).toInt()
-        p.y = (event.y - mCoo.y).toInt()
-    }
 
     fun reflectY(p0: Point, p1: Point, p2: Point, p3: Point, path: Path) {
         path.cubicTo(
@@ -110,15 +89,6 @@ class Lever1CubicView : View {
             (p3.x * 2 - p0.x).toFloat(),
             p0.y.toFloat()
         )
-//        path.cubicTo(
-//            (p3.x * 2 - p2.x).toFloat(),
-//            p2.y.toFloat(),
-//            (p3.x * 2 - p1.x).toFloat(),
-//            p1.y.toFloat(),
-//            (p3.x * 2 - p0.x).toFloat(),
-//            p0.y.toFloat()
-//        )
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
